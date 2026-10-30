@@ -106,7 +106,7 @@ main { padding-block: 28px 64px; }
 }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 22px; }
 .card {
   background: var(--surface); border: 1.5px solid var(--ink); border-radius: var(--r);
   overflow: hidden; display: flex; flex-direction: column; transition: transform .15s, box-shadow .15s;
@@ -114,10 +114,10 @@ main { padding-block: 28px 64px; }
 .card:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--shadow); }
 .thumb { border-bottom: 1.5px solid var(--ink) !important; }
 .thumb {
-  position: relative; aspect-ratio: 4 / 3; max-width: 100%; border: 0; padding: 0; cursor: zoom-in; display: block; width: 100%;
+  position: relative; aspect-ratio: 1 / 1; max-width: 100%; border: 0; padding: 0; cursor: zoom-in; display: block; width: 100%;
   background: var(--bed); overflow: hidden;
 }
-.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s; }
+.thumb img { width: 100%; height: 100%; object-fit: contain; display: block; transition: transform .3s; }
 .thumb:hover img { transform: scale(1.04); }
 .thumb .nfotos {
   position: absolute; right: 10px; bottom: 10px; background: var(--surface); color: var(--ink);
@@ -133,6 +133,7 @@ main { padding-block: 28px 64px; }
 .cat { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
 .card h3 { font-size: 20px; font-weight: 600; }
 .desc { color: var(--muted); font-size: 14px; margin: 0; }
+.card .desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .specs { font-family: var(--f-mono); font-size: 12px; color: var(--muted); margin: 2px 0 0; }
 .card-foot { display: flex; align-items: end; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 10px; flex-wrap: wrap; }
 .price small { display: block; font-size: 12px; color: var(--muted); }
@@ -172,6 +173,14 @@ dialog::backdrop { background: rgb(20 14 10 / .6); }
   width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; padding: 0;
 }
 .sw[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: 2px; }
+.opcoes { display: grid; gap: 8px; margin-top: 6px; }
+.opcao {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px; text-align: left;
+  border: 1.5px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 12px; cursor: pointer;
+}
+.opcao small { display: block; font-size: 12px; color: var(--muted); }
+.opcao b { font-family: var(--f-mono); font-weight: 500; color: var(--price); white-space: nowrap; }
+.opcao[aria-pressed="true"] { border-color: var(--ink); background: var(--accent-soft); box-shadow: 2px 2px 0 var(--shadow); }
 .label { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
 .side .btn-wa { justify-content: center; padding: 12px; font-size: 15px; margin-top: auto; }
 
@@ -370,7 +379,11 @@ footer { color: var(--muted); font-size: 13px; padding-block: 24px; border-top: 
       <p class="desc" id="mDesc"></p>
       <p class="specs" id="mSpecs"></p>
       <div class="price"><small id="mPrecoRotulo"></small><b id="mPreco"></b></div>
-      <p class="nota" id="mNota" hidden>Você recebe o arquivo .3mf pelo WhatsApp depois do pagamento. A peça impressa não está inclusa.</p>
+      <p class="nota" id="mNota" hidden></p>
+      <div id="blocoOpcoes" hidden>
+        <div class="label">Escolha</div>
+        <div class="opcoes" id="opcoes"></div>
+      </div>
       <div id="blocoCor">
         <div class="label">Cor</div>
         <div class="swatches" id="cores"></div>
@@ -415,6 +428,90 @@ const MODELOS = [
     descricao: "Boneco quebra-nozes com árvore de Natal sanfonada. O boneco vem em várias partes e já configurado para AMS (multicor); a árvore é de cor única, sem AMS. Altura aproximada de 30 cm.",
     specs: "3MF · Multipartes · AMS · ~30 cm",
     preco: 50,
+    entrega: "o arquivo .3mf pelo WhatsApp",
+  },
+  {
+    nome: "Troféu Virada Histórica · Lula 2026",
+    categoria: "Comemorativos",
+    tipo: "arquivo",
+    fotos: ["fotos/trofeu-virada-historica.jpg"],
+    descricao: "Kit com 2 mini troféus em estrela para eternizar o dia 25 de outubro de 2026: “A História é Feita pelo Povo” e “A Esperança Venceu!”. Detalhes em relevo e base no formato do Brasil.",
+    specs: "STL / 3MF · Kit com 2 modelos · ~12 cm",
+    preco: 25,
+    entrega: "o acesso aos arquivos STL/3MF pelo Google Drive",
+  },
+  {
+    nome: "Kit Ímãs de Geladeira · 4 Estrelas",
+    categoria: "Comemorativos",
+    tipo: "arquivo",
+    fotos: ["fotos/kit-imas-4-estrelas.jpg"],
+    descricao: "4 ímãs de geladeira em estrela com detalhes em alto-relevo e a data 25.10.2026: “A História é Feita pelo Povo”, “A Esperança Venceu!”, “Eu Ajudei a Fazer História” e “Todo Poder Emana do Povo”. Para decorar ou produzir para vender.",
+    specs: "3MF · Kit com 4 modelos · Alto-relevo",
+    preco: 20,
+    entrega: "o acesso aos 4 arquivos 3MF pelo Google Drive",
+  },
+  {
+    nome: "Porta-Lápis Religioso",
+    categoria: "Religiosos",
+    tipo: "arquivo",
+    fotos: ["fotos/porta-lapis-religioso.jpg"],
+    descricao: "3 modelos de porta-lápis inspirados nas vestes litúrgicas: Estola (verde, vermelho e roxo), Coroinha (vermelho ou preto) e Padre. Em várias partes: cada cor é uma parte do modelo, então não precisa de AMS.",
+    specs: "3MF · Multipartes · Sem AMS · 3 modelos",
+    preco: 30,
+    // "opcoes" mostra uma escolha no detalhe do produto; a opção vai na mensagem do WhatsApp
+    opcoes: [
+      { nome: "Pacote com os 3 modelos", detalhe: "Estola, Coroinha e Padre", preco: 90 },
+      { nome: "Estola", detalhe: "Variações verde, vermelho e roxo", preco: 30 },
+      { nome: "Coroinha", detalhe: "Variações vermelho e preto", preco: 30 },
+      { nome: "Padre", detalhe: "Batina preta com colarinho", preco: 30 },
+    ],
+    entrega: "o acesso aos arquivos 3MF pelo Google Drive",
+  },
+  {
+    nome: "Fatiador Circular para Uso Geral",
+    categoria: "Utilidades",
+    tipo: "arquivo",
+    fotos: ["fotos/fatiador-circular.jpg"],
+    descricao: "Base com guia e anéis de corte em tamanhos diferentes para fazer recortes redondos precisos, com acabamento limpo. Fácil de imprimir e resistente para uso contínuo. Tamanhos personalizados sob consulta.",
+    specs: "STL · Vários diâmetros · Tamanho sob consulta",
+    preco: 25,
+    entrega: "o link do arquivo STL pelo Google Drive",
+  },
+  {
+    nome: "Boleador para Pãezinhos e Docinhos",
+    categoria: "Cozinha",
+    tipo: "arquivo",
+    fotos: ["fotos/boleador.jpg"],
+    descricao: "Boleador em formato de flor com tampa: coloque a massa nas cavidades, feche e gire para formar bolinhas iguais de pão de queijo, brigadeiro e docinhos. Dois tamanhos no mesmo arquivo, para uso caseiro ou profissional.",
+    specs: "STL · 2 tamanhos: Ø 8,5 cm e Ø 5 cm",
+    preco: 50,
+    entrega: "o link do arquivo STL pelo Google Drive",
+  },
+  {
+    nome: "Chaveiro Clicker Morango",
+    categoria: "Chaveiros",
+    tipo: "arquivo",
+    fotos: ["fotos/clicker-morango.jpg"],
+    descricao: "Chaveiro clicker de morango com alça de nome e uma letra, personalizado com o nome e a letra que você quiser. Modelo colorido, ideal para impressão multicor.",
+    specs: "3MF · Nome e letra personalizados · Colorido",
+    preco: 50,
+    // "personalizar" acrescenta estes campos na mensagem do WhatsApp para o cliente preencher
+    personalizar: ["Nome", "Letra"],
+    entrega: "o arquivo 3MF com o seu nome e a sua letra pelo Google Drive",
+  },
+  {
+    nome: "Mini Mesinhas Bluey & Bingo",
+    categoria: "Decoração",
+    tipo: "arquivo",
+    fotos: ["fotos/mini-mesinhas-bluey-bingo-v2.jpg"],
+    descricao: "Mini mesas decorativas com Bluey e Bingo segurando o tampo. Peças divertidas para decorar o quarto ou o cantinho de quem ama os personagens. Cada personagem é vendido separadamente.",
+    specs: "3MF · Pronto para imprimir",
+    preco: 30,
+    opcoes: [
+      { nome: "Bluey", detalhe: "Mini mesinha azul", preco: 30 },
+      { nome: "Bingo", detalhe: "Mini mesinha laranja", preco: 30 },
+    ],
+    entrega: "o arquivo 3MF pelo Google Drive",
   },
 
   // Exemplo de peça impressa (apague as barras // para usar):
@@ -428,9 +525,11 @@ const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL
 const ICON_WA = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.1-1.2l-.5-.3Z"/></svg>';
 
 // Link do WhatsApp com a mensagem já escrita
-function linkWhats(modelo, cor) {
+function linkWhats(modelo, cor, opcao) {
+  const item = opcao ? `*${modelo.nome} – ${opcao.nome}* (${brl(opcao.preco)})` : `*${modelo.nome}* (${brl(modelo.preco)})`;
   const msg = modelo.tipo === "arquivo"
-    ? `Olá! Vi no catálogo da ${NOME_LOJA} e quero comprar o arquivo digital: *${modelo.nome}* (${brl(modelo.preco)}). Como faço o pagamento?`
+    ? `Olá! Vi no catálogo da ${NOME_LOJA} e quero comprar o arquivo digital: ${item}. Como faço o pagamento?` +
+      (modelo.personalizar ? "\n\n" + modelo.personalizar.map(c => `${c}: `).join("\n") : "")
     : `Olá! Vi no catálogo da ${NOME_LOJA} e quero pedir: *${modelo.nome}*` + (cor ? ` na cor ${cor}` : "") + `. Pode me passar o orçamento?`;
   return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
 }
@@ -477,7 +576,7 @@ $("#grade").innerHTML = MODELOS.map((m, i) => `
       <p class="desc">${m.descricao}</p>
       <p class="specs">${m.specs || ""}</p>
       <div class="card-foot">
-        <div class="price"><small>${m.tipo === "arquivo" ? "arquivo digital" : "a partir de"}</small><b>${brl(m.preco)}</b></div>
+        <div class="price"><small>${m.opcoes ? "a partir de" : m.tipo === "arquivo" ? "arquivo digital" : "a partir de"}</small><b>${brl(m.preco)}</b></div>
         <a class="btn-wa" href="${linkWhats(m)}" target="_blank" rel="noopener">${ICON_WA}${m.tipo === "arquivo" ? "Comprar" : "Pedir"}</a>
       </div>
     </div>
@@ -512,6 +611,16 @@ function escolherCor(nome) {
   $("#mWa").innerHTML = `${ICON_WA}Pedir na cor ${nome}`;
 }
 
+function escolherOpcao(k) {
+  const o = modeloAtual.opcoes[k];
+  document.querySelectorAll(".opcao").forEach(b => b.setAttribute("aria-pressed", +b.dataset.k === k));
+  $("#mPreco").textContent = brl(o.preco);
+  $("#mPrecoRotulo").textContent = /pacote/i.test(o.nome) ? o.nome : `Modelo: ${o.nome}`;
+  $("#mWa").href = linkWhats(modeloAtual, null, o);
+  $("#mWa").innerHTML = `${ICON_WA}Comprar por ${brl(o.preco)}`;
+}
+$("#opcoes").onclick = (e) => { const b = e.target.closest(".opcao"); if (b) escolherOpcao(+b.dataset.k); };
+
 $("#cores").innerHTML = CORES.map(c =>
   `<button class="sw" type="button" data-cor="${c.nome}" style="background:${c.hex}" aria-label="${c.nome}" title="${c.nome}"></button>`).join("");
 $("#cores").onclick = (e) => { const s = e.target.closest(".sw"); if (s) escolherCor(s.dataset.cor); };
@@ -523,7 +632,7 @@ function abrirModal(i) {
   $("#mNome").textContent = m.nome;
   $("#mDesc").textContent = m.descricao;
   $("#mSpecs").textContent = m.specs || "";
-  $("#mPrecoRotulo").textContent = m.tipo === "arquivo" ? "arquivo digital" : "a partir de";
+  $("#mPrecoRotulo").textContent = m.opcoes ? "a partir de" : m.tipo === "arquivo" ? "arquivo digital" : "a partir de";
   $("#mPreco").textContent = brl(m.preco);
   $("#mFoto").alt = m.nome;
   $("#mFoto").hidden = !fotos.length;
@@ -533,8 +642,14 @@ function abrirModal(i) {
   if (fotos.length) mostrarFoto(fotos[0]);
   const arquivo = m.tipo === "arquivo";
   $("#mNota").hidden = !arquivo;
+  $("#mNota").textContent = `Você recebe ${m.entrega || "o arquivo pelo WhatsApp"} depois do pagamento. A peça impressa não está inclusa.`;
   $("#blocoCor").hidden = arquivo;
-  if (arquivo) {
+  $("#blocoOpcoes").hidden = !m.opcoes;
+  $("#opcoes").innerHTML = (m.opcoes || []).map((o, k) =>
+    `<button class="opcao" type="button" data-k="${k}" aria-pressed="false"><span>${o.nome}${o.detalhe ? `<small>${o.detalhe}</small>` : ""}</span><b>${brl(o.preco)}</b></button>`).join("");
+  if (m.opcoes) {
+    escolherOpcao(0);
+  } else if (arquivo) {
     $("#mWa").href = linkWhats(m);
     $("#mWa").innerHTML = `${ICON_WA}Comprar pelo WhatsApp`;
   } else {
